@@ -4,6 +4,7 @@ import authConfig from "./auth.config";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "./lib/db";
 import { getUserById } from "./data/getUser";
+import { getTwoFactorConfirmationByUserId } from "./data/getTwoFactorConfirmation";
 
 export const {
   handlers: { GET, POST },
@@ -33,7 +34,19 @@ export const {
       // Prevent sign-in w/o email verification
       if (!existingUser?.emailVerified) return false;
 
-      // TODO: Add 2FA check here
+      if (existingUser.isTwoFactorEnabled) {
+        const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(
+          existingUser.id
+        );
+
+        if (!twoFactorConfirmation) return false;
+
+        // Delete two-factor conf for next sign-in
+        // TODO: Add a check for expiration
+        await db.twoFactorConfirmation.delete({
+          where: { id: twoFactorConfirmation.id },
+        });
+      }
 
       return true;
     },
@@ -46,6 +59,10 @@ export const {
         session.user.role = token.role;
       }
 
+      if (session.user) {
+        session.user.isTwoFactorEnabled = token.isTwoFactorEnabled;
+      }
+
       return session;
     },
     async jwt({ token }) {
@@ -56,6 +73,8 @@ export const {
       if (!existingUser) return token;
 
       token.role = existingUser.role;
+      token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
+
       return token;
     },
   },
