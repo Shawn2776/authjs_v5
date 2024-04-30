@@ -47,8 +47,9 @@ const LoginForm = () => {
 
     startTransition(() => {
       Login(values).then((data) => {
-        setError(data.error || "");
-        setSuccess(data.success || "");
+        setError(data?.error);
+        // TODO: Add with email magiLink
+        setSuccess(data?.success);
       });
     });
   };
