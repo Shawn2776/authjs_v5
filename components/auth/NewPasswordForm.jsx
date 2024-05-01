@@ -14,7 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
-import { newPasswordSchema } from "@/schemas";
+import { NewPasswordSchema } from "@/schemas";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FormError } from "../FormError";
@@ -31,7 +31,7 @@ const NewPasswordForm = () => {
   const [success, setSuccess] = useState("");
 
   const form = useForm({
-    resolver: zodResolver(newPasswordSchema),
+    resolver: zodResolver(NewPasswordSchema),
     defaultValues: {
       password: "",
     },

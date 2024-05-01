@@ -2,6 +2,9 @@
 
 import { useRouter } from "next/navigation";
 
+import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
+import LoginForm from "./LoginForm";
+
 export const LoginButton = ({ children, mode = "redirect", asChild }) => {
   const router = useRouter();
 
@@ -10,7 +13,14 @@ export const LoginButton = ({ children, mode = "redirect", asChild }) => {
   };
 
   if (mode === "modal") {
-    return <span>TODO: Implememt Modal</span>;
+    return (
+      <Dialog>
+        <DialogTrigger asChild={asChild}>{children}</DialogTrigger>
+        <DialogContent className="w-auto p-0 bg-transparent">
+          <LoginForm />
+        </DialogContent>
+      </Dialog>
+    );
   }
   return (
     <span onClick={onClick} className="cursor-pointer">
